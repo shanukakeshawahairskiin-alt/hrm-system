@@ -1,0 +1,59 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  font-family: "Inter", system-ui, sans-serif;
+  color: #161c27;
+}
+
+.font-nums {
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Perforated "tear-off stub" divider — the signature motif, used sparingly */
+.stub-divider {
+  border-top: 1.5px dashed #d8cdb2;
+  position: relative;
+}
+.stub-divider::before,
+.stub-divider::after {
+  content: "";
+  position: absolute;
+  top: -7px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #eef0f1;
+  border: 1.5px solid #d8cdb2;
+}
+.stub-divider::before {
+  left: -7px;
+}
+.stub-divider::after {
+  right: -7px;
+}
+
+::selection {
+  background: #a8813c;
+  color: white;
+}
+
+/* Subtle lift on interactive cards — kept understated per one signature motif */
+.card-lift {
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+.card-lift:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px -8px rgba(22, 28, 39, 0.18);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+  }
+}
