@@ -197,13 +197,25 @@ function simplePeriodLabel(period) {
 
 function drawLetterhead(doc) {
   const top = 40;
+  // Default slot for a small square/monogram-style logo (placeholder icon case).
+  let textX = 96;
+  let textWidth = 380;
+
   if (COMPANY_LOGO_PATH && fs.existsSync(COMPANY_LOGO_PATH)) {
     try {
-      doc.image(COMPANY_LOGO_PATH, 40, top, { height: 44 });
+      // Company logo is a wide wordmark, not a square icon — constrain by WIDTH
+      // (not height) so it renders at a sane size, and give the name/address
+      // text its own row further right so the two never overlap.
+      const LOGO_WIDTH = 130;
+      doc.image(COMPANY_LOGO_PATH, 40, top, { width: LOGO_WIDTH });
+      textX = 40 + LOGO_WIDTH + 15;
+      textWidth = 555 - textX;
     } catch (e) {
-      /* ignore broken logo file */
+      /* ignore broken logo file, falls through to placeholder below */
     }
-  } else {
+  }
+
+  if (!COMPANY_LOGO_PATH || !fs.existsSync(COMPANY_LOGO_PATH)) {
     // Placeholder logo mark: a simple monogram square so the layout still reads as a letterhead
     doc.roundedRect(40, top, 44, 44, 6).fill(ACCENT);
     doc
@@ -213,17 +225,18 @@ function drawLetterhead(doc) {
       .text(COMPANY_NAME.trim().charAt(0).toUpperCase(), 40, top + 12, { width: 44, align: "center" });
   }
 
+  // Vertically center the name/address block against the logo's height.
   doc
     .fillColor(INK)
     .font("Helvetica-Bold")
     .fontSize(16)
-    .text(COMPANY_NAME, 96, top, { width: 380 });
+    .text(COMPANY_NAME, textX, top + 6, { width: textWidth });
   if (COMPANY_ADDRESS) {
     doc
       .fillColor(MUTED)
       .font("Helvetica")
       .fontSize(9)
-      .text(COMPANY_ADDRESS, 96, top + 20, { width: 380 });
+      .text(COMPANY_ADDRESS, textX, top + 26, { width: textWidth });
   }
 
   doc.moveTo(40, top + 62).lineTo(555, top + 62).strokeColor(LINE).lineWidth(1).stroke();
