@@ -70,18 +70,29 @@ export function generateSimplePayslipPdf(employee, res, period) {
     ["NIC No", employee.nicNo],
     ["EPF No", employee.epfNo],
   ];
-  doc.font("Helvetica").fontSize(9.5);
+  const LEFT_VALUE_X = 130, LEFT_VALUE_W = 170;
+  const RIGHT_VALUE_X = 400, RIGHT_VALUE_W = 115;
+  const ROW_GAP = 6; // breathing room below the taller of the two columns in a row
+
+  // Measure each row's actual height first (values can wrap onto 2+ lines,
+  // e.g. a long Cost Centre like "Customer service department") so rows
+  // never overlap regardless of content length.
+  doc.font("Helvetica-Bold").fontSize(9.5);
+  const rowHeights = idLeft.map((_, i) => {
+    const leftH = doc.heightOfString(idLeft[i][1] || "-", { width: LEFT_VALUE_W });
+    const rightH = doc.heightOfString(idRight[i][1] || "-", { width: RIGHT_VALUE_W });
+    return Math.max(leftH, rightH, 12) + ROW_GAP;
+  });
+
+  let rowY = y;
   idLeft.forEach(([label, value], i) => {
-    doc.fillColor(MUTED).text(label, 40, y + i * 15, { width: 90 });
-    doc.fillColor(INK).font("Helvetica-Bold").text(value || "-", 130, y + i * 15, { width: 170 });
-    doc.font("Helvetica");
+    doc.fillColor(MUTED).font("Helvetica").fontSize(9.5).text(label, 40, rowY, { width: 90 });
+    doc.fillColor(INK).font("Helvetica-Bold").text(value || "-", LEFT_VALUE_X, rowY, { width: LEFT_VALUE_W });
+    doc.fillColor(MUTED).font("Helvetica").text(idRight[i][0], 320, rowY, { width: 80 });
+    doc.fillColor(INK).font("Helvetica-Bold").text(idRight[i][1] || "-", RIGHT_VALUE_X, rowY, { width: RIGHT_VALUE_W });
+    rowY += rowHeights[i];
   });
-  idRight.forEach(([label, value], i) => {
-    doc.fillColor(MUTED).text(label, 320, y + i * 15, { width: 80 });
-    doc.fillColor(INK).font("Helvetica-Bold").text(value || "-", 400, y + i * 15, { width: 115 });
-    doc.font("Helvetica");
-  });
-  y += 15 * 3 + 14;
+  y = rowY + 8;
   doc.moveTo(40, y).lineTo(515, y).strokeColor(LINE).lineWidth(1).stroke();
   y += 18;
 
