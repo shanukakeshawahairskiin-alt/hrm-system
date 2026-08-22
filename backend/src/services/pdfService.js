@@ -89,6 +89,7 @@ export function generateSimplePayslipPdf(employee, res, period) {
 
   const earningsRows = [
     ["BASIC SALARY", employee.basicSalary],
+    ["ADJUSTED BASIC", employee.adjustedBasic],
     ["OPERATIONAL ALLOWANCE", employee.operationalAllowance],
     ["ATTENDANCE ALLOWANCE", employee.attendanceAllowance],
     ["TARGET ALLOWANCE", employee.targetAllowance],
